@@ -1,0 +1,1647 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>
+			<nta>
+			<declaration>		
+			const int N=19;
+			typedef int[0, N-1] id_t;
+			
+			const int mobileInstructions=16, cloudInstructions=32;
+			
+			bool IsLocal=true;
+			bool managerEnabled=true;
+			int[0,2] fragmentStateLocal[N], fragmentStateRemote[N]; //0=null, 1=idle, 2=running
+			
+			
+			const int[0,100]  network=2;
+			int[0,100] battery=100;
+			clock globalTime;
+			
+			int clockTime;
+			int memory ;
+			
+			
+			chan F[N], startL[N], startR[N], stopL[N], stopR[N], disposeL[N], disposeR[N], completed[N], manager[N], time, timeR;
+			broadcast chan B[N];
+			chan executeL, executeR;
+			
+			//istruzione spedite al processore
+			int[0,N] fragmentToCompute=N;
+			int[0,150] instructionsNumber[N];
+			
+			
+			
+			typedef struct 
+			{ int[0,150] instructions;  
+			  int[0,200] memory;
+			  int[0,100] megaByte;
+			  bool isOffloadable;
+			} Fragment;
+			const Fragment Info[N]={
+				{11,1,0, false}
+				,
+				{110,20,10, false}
+				,
+				{15,5,5, false}
+				,
+				{30,10,5, true}
+				,
+				{5,1,1, false}
+				,
+				{10,5,2, true}
+				,
+				{11,1,5, false}
+				,
+				{30,10,5, true}
+				,
+				{11,2,1, false}
+				,
+				{20,10,2, true}
+				,
+				{25,2,5, false}
+				,
+				{20,5,0, true}
+				,
+				{10,5,0, false}
+				,
+				{30,5,0, true}
+				,
+				{10,1,0, false}
+				,
+				{5,2,0, false}
+				,
+				{5,2,0, true}
+				,
+				{5,2,0, false}
+				,
+				{5,2,0, true}
+				
+			};
+			
+			
+			
+			
+			void memoryUp(int f){
+			memory+=Info[f].memory;
+			}
+			
+			
+			void memoryDown(int f){
+			memory-=Info[f].memory;
+			}
+			
+			
+			void setInstructions(int i){
+			instructionsNumber[i]=Info[i].instructions;
+			}
+			
+			
+			</declaration>
+			<template>
+			<name x="5" y="5"> USER_INTERFACE </name>
+			<declaration></declaration>
+			id1
+			<location id="id1">
+				<name>id1</name>
+			</location>
+			
+			
+			<location id="id2">
+				<name>id2</name>
+			</location>
+			
+			
+			
+			<location id="id3">
+				<name>id3</name>
+			</location>
+			<location id="id4">
+				<name>id4</name>
+			</location>
+			<location id="id5">
+				<name>id5</name>
+			</location>
+			
+			
+			
+			
+			
+			<location id="id6">
+				<name>id6</name>
+			</location>
+			<location id="id7">
+				<name>id7</name>
+			</location>
+			<init ref="id7"/>
+				
+			
+			<transition>
+				<source ref="id3"/>
+				<target ref="id2"/>
+					<label kind="synchronisation" >F[11]!</label>
+			</transition>
+			<transition>
+				<source ref="id4"/>
+				<target ref="id3"/>
+					<label kind="synchronisation" >completed[0]?</label>
+			</transition>
+			<transition>
+				<source ref="id4"/>
+				<target ref="id4"/>
+					<label kind="synchronisation" >manager[0]!</label>
+			</transition>
+			<transition>
+				<source ref="id5"/>
+				<target ref="id4"/>
+					<label kind="synchronisation" >F[0]?</label>
+					<label kind="assignment" >setInstructions(0)</label>
+			</transition>
+			<transition>
+				<source ref="id1"/>
+				<target ref="id5"/>
+					<label kind="synchronisation" >F[1]!</label>
+			</transition>
+			<transition>
+				<source ref="id6"/>
+				<target ref="id1"/>
+					<label kind="synchronisation" >completed[0]?</label>
+			</transition>
+			<transition>
+				<source ref="id6"/>
+				<target ref="id6"/>
+					<label kind="synchronisation" >manager[0]!</label>
+			</transition>
+			<transition>
+				<source ref="id7"/>
+				<target ref="id6"/>
+					<label kind="assignment" >setInstructions(0)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> CONTROL </name>
+			<declaration></declaration>
+			id8
+			<location id="id8">
+				<name>id8</name>
+			</location>
+			
+			
+			<location id="id9">
+				<name>id9</name>
+			</location>
+			
+			
+			
+			
+			<location id="id10">
+				<name>id10</name>
+			</location>
+			<init ref="id9"/>
+				
+			
+			<transition>
+				<source ref="id8"/>
+				<target ref="id9"/>
+					<label kind="synchronisation" >F[4]!</label>
+			</transition>
+			<transition>
+				<source ref="id8"/>
+				<target ref="id9"/>
+					<label kind="synchronisation" >F[2]!</label>
+			</transition>
+			<transition>
+				<source ref="id8"/>
+				<target ref="id9"/>
+					<label kind="synchronisation" >F[10]!</label>
+			</transition>
+			<transition>
+				<source ref="id8"/>
+				<target ref="id9"/>
+					<label kind="synchronisation" >F[8]!</label>
+			</transition>
+			<transition>
+				<source ref="id8"/>
+				<target ref="id9"/>
+					<label kind="synchronisation" >F[14]!</label>
+			</transition>
+			<transition>
+				<source ref="id10"/>
+				<target ref="id8"/>
+					<label kind="synchronisation" >completed[1]?</label>
+			</transition>
+			<transition>
+				<source ref="id10"/>
+				<target ref="id10"/>
+					<label kind="synchronisation" >manager[1]!</label>
+			</transition>
+			<transition>
+				<source ref="id9"/>
+				<target ref="id10"/>
+					<label kind="synchronisation" >F[1]?</label>
+					<label kind="assignment" >setInstructions(1)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> PRODUCT_CATALOG </name>
+			<declaration></declaration>
+			id11
+			<location id="id11">
+				<name>id11</name>
+			</location>
+			
+			
+			<location id="id12">
+				<name>id12</name>
+			</location>
+			
+			
+			
+			<location id="id13">
+				<name>id13</name>
+			</location>
+			<location id="id14">
+				<name>id14</name>
+			</location>
+			<location id="id15">
+				<name>id15</name>
+			</location>
+			
+			
+			
+			<location id="id16">
+				<name>id16</name>
+			</location>
+			<init ref="id12"/>
+				
+			
+			<transition>
+				<source ref="id13"/>
+				<target ref="id12"/>
+					<label kind="synchronisation" >F[3]!</label>
+			</transition>
+			<transition>
+				<source ref="id14"/>
+				<target ref="id13"/>
+					<label kind="synchronisation" >completed[2]?</label>
+			</transition>
+			<transition>
+				<source ref="id14"/>
+				<target ref="id14"/>
+					<label kind="synchronisation" >manager[2]!</label>
+			</transition>
+			<transition>
+				<source ref="id15"/>
+				<target ref="id14"/>
+					<label kind="synchronisation" >F[2]?</label>
+					<label kind="assignment" >setInstructions(2)</label>
+			</transition>
+			<transition>
+				<source ref="id16"/>
+				<target ref="id11"/>
+					<label kind="synchronisation" >completed[2]?</label>
+			</transition>
+			<transition>
+				<source ref="id16"/>
+				<target ref="id16"/>
+					<label kind="synchronisation" >manager[2]!</label>
+			</transition>
+			<transition>
+				<source ref="id12"/>
+				<target ref="id16"/>
+					<label kind="synchronisation" >F[2]?</label>
+					<label kind="assignment" >setInstructions(2)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> CATALOG_DATABASE </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id17">
+				<name>id17</name>
+			</location>
+			
+			<location id="id18">
+				<name>id18</name>
+			</location>
+			<init ref="id17"/>
+				
+			
+			<transition>
+				<source ref="id18"/>
+				<target ref="id17"/>
+					<label kind="synchronisation" >completed[3]?</label>
+			</transition>
+			<transition>
+				<source ref="id18"/>
+				<target ref="id18"/>
+					<label kind="synchronisation" >manager[3]!</label>
+			</transition>
+			<transition>
+				<source ref="id17"/>
+				<target ref="id18"/>
+					<label kind="synchronisation" >F[3]?</label>
+					<label kind="assignment" >setInstructions(3)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> SIGN_ON </name>
+			<declaration></declaration>
+			id19
+			<location id="id19">
+				<name>id19</name>
+			</location>
+			
+			
+			<location id="id20">
+				<name>id20</name>
+			</location>
+			
+			
+			
+			<location id="id21">
+				<name>id21</name>
+			</location>
+			<location id="id22">
+				<name>id22</name>
+			</location>
+			<location id="id23">
+				<name>id23</name>
+			</location>
+			
+			
+			
+			<location id="id24">
+				<name>id24</name>
+			</location>
+			<init ref="id20"/>
+				
+			
+			<transition>
+				<source ref="id21"/>
+				<target ref="id20"/>
+					<label kind="synchronisation" >F[5]!</label>
+			</transition>
+			<transition>
+				<source ref="id22"/>
+				<target ref="id21"/>
+					<label kind="synchronisation" >completed[4]?</label>
+			</transition>
+			<transition>
+				<source ref="id22"/>
+				<target ref="id22"/>
+					<label kind="synchronisation" >manager[4]!</label>
+			</transition>
+			<transition>
+				<source ref="id23"/>
+				<target ref="id22"/>
+					<label kind="synchronisation" >F[4]?</label>
+					<label kind="assignment" >setInstructions(4)</label>
+			</transition>
+			<transition>
+				<source ref="id24"/>
+				<target ref="id19"/>
+					<label kind="synchronisation" >completed[4]?</label>
+			</transition>
+			<transition>
+				<source ref="id24"/>
+				<target ref="id24"/>
+					<label kind="synchronisation" >manager[4]!</label>
+			</transition>
+			<transition>
+				<source ref="id20"/>
+				<target ref="id24"/>
+					<label kind="synchronisation" >F[4]?</label>
+					<label kind="assignment" >setInstructions(4)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> USER_DATABASE </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id25">
+				<name>id25</name>
+			</location>
+			
+			<location id="id26">
+				<name>id26</name>
+			</location>
+			<init ref="id25"/>
+				
+			
+			<transition>
+				<source ref="id26"/>
+				<target ref="id25"/>
+					<label kind="synchronisation" >completed[5]?</label>
+			</transition>
+			<transition>
+				<source ref="id26"/>
+				<target ref="id26"/>
+					<label kind="synchronisation" >manager[5]!</label>
+			</transition>
+			<transition>
+				<source ref="id25"/>
+				<target ref="id26"/>
+					<label kind="synchronisation" >F[5]?</label>
+					<label kind="assignment" >setInstructions(5)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> CUSTOMER </name>
+			<declaration></declaration>
+			id27
+			<location id="id27">
+				<name>id27</name>
+			</location>
+			
+			
+			<location id="id28">
+				<name>id28</name>
+			</location>
+			
+			
+			
+			<location id="id29">
+				<name>id29</name>
+			</location>
+			<location id="id30">
+				<name>id30</name>
+			</location>
+			<location id="id31">
+				<name>id31</name>
+			</location>
+			
+			
+			
+			<location id="id32">
+				<name>id32</name>
+			</location>
+			<init ref="id28"/>
+				
+			
+			<transition>
+				<source ref="id29"/>
+				<target ref="id28"/>
+					<label kind="synchronisation" >F[7]!</label>
+			</transition>
+			<transition>
+				<source ref="id30"/>
+				<target ref="id29"/>
+					<label kind="synchronisation" >completed[6]?</label>
+			</transition>
+			<transition>
+				<source ref="id30"/>
+				<target ref="id30"/>
+					<label kind="synchronisation" >manager[6]!</label>
+			</transition>
+			<transition>
+				<source ref="id31"/>
+				<target ref="id30"/>
+					<label kind="synchronisation" >F[6]?</label>
+					<label kind="assignment" >setInstructions(6)</label>
+			</transition>
+			<transition>
+				<source ref="id32"/>
+				<target ref="id27"/>
+					<label kind="synchronisation" >completed[6]?</label>
+			</transition>
+			<transition>
+				<source ref="id32"/>
+				<target ref="id32"/>
+					<label kind="synchronisation" >manager[6]!</label>
+			</transition>
+			<transition>
+				<source ref="id28"/>
+				<target ref="id32"/>
+					<label kind="synchronisation" >F[6]?</label>
+					<label kind="assignment" >setInstructions(6)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> ACCOUNT_DATABASE </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id33">
+				<name>id33</name>
+			</location>
+			
+			<location id="id34">
+				<name>id34</name>
+			</location>
+			<init ref="id33"/>
+				
+			
+			<transition>
+				<source ref="id34"/>
+				<target ref="id33"/>
+					<label kind="synchronisation" >completed[7]?</label>
+			</transition>
+			<transition>
+				<source ref="id34"/>
+				<target ref="id34"/>
+					<label kind="synchronisation" >manager[7]!</label>
+			</transition>
+			<transition>
+				<source ref="id33"/>
+				<target ref="id34"/>
+					<label kind="synchronisation" >F[7]?</label>
+					<label kind="assignment" >setInstructions(7)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> ORDER_MESSAGE </name>
+			<declaration></declaration>
+			id35
+			<location id="id35">
+				<name>id35</name>
+			</location>
+			
+			
+			<location id="id36">
+				<name>id36</name>
+			</location>
+			
+			
+			
+			<location id="id37">
+				<name>id37</name>
+			</location>
+			<location id="id38">
+				<name>id38</name>
+			</location>
+			<location id="id39">
+				<name>id39</name>
+			</location>
+			
+			
+			
+			<location id="id40">
+				<name>id40</name>
+			</location>
+			<init ref="id36"/>
+				
+			
+			<transition>
+				<source ref="id37"/>
+				<target ref="id36"/>
+					<label kind="synchronisation" >F[9]!</label>
+			</transition>
+			<transition>
+				<source ref="id38"/>
+				<target ref="id37"/>
+					<label kind="synchronisation" >completed[8]?</label>
+			</transition>
+			<transition>
+				<source ref="id38"/>
+				<target ref="id38"/>
+					<label kind="synchronisation" >manager[8]!</label>
+			</transition>
+			<transition>
+				<source ref="id39"/>
+				<target ref="id38"/>
+					<label kind="synchronisation" >F[8]?</label>
+					<label kind="assignment" >setInstructions(8)</label>
+			</transition>
+			<transition>
+				<source ref="id40"/>
+				<target ref="id35"/>
+					<label kind="synchronisation" >completed[8]?</label>
+			</transition>
+			<transition>
+				<source ref="id40"/>
+				<target ref="id40"/>
+					<label kind="synchronisation" >manager[8]!</label>
+			</transition>
+			<transition>
+				<source ref="id36"/>
+				<target ref="id40"/>
+					<label kind="synchronisation" >F[8]?</label>
+					<label kind="assignment" >setInstructions(8)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> QUEUE </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id41">
+				<name>id41</name>
+			</location>
+			
+			<location id="id42">
+				<name>id42</name>
+			</location>
+			<init ref="id41"/>
+				
+			
+			<transition>
+				<source ref="id42"/>
+				<target ref="id41"/>
+					<label kind="synchronisation" >completed[9]?</label>
+			</transition>
+			<transition>
+				<source ref="id42"/>
+				<target ref="id42"/>
+					<label kind="synchronisation" >manager[9]!</label>
+			</transition>
+			<transition>
+				<source ref="id41"/>
+				<target ref="id42"/>
+					<label kind="synchronisation" >F[9]?</label>
+					<label kind="assignment" >setInstructions(9)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> SHOPPING_CART </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id43">
+				<name>id43</name>
+			</location>
+			
+			<location id="id44">
+				<name>id44</name>
+			</location>
+			<init ref="id43"/>
+				
+			
+			<transition>
+				<source ref="id44"/>
+				<target ref="id43"/>
+					<label kind="synchronisation" >completed[10]?</label>
+			</transition>
+			<transition>
+				<source ref="id44"/>
+				<target ref="id44"/>
+					<label kind="synchronisation" >manager[10]!</label>
+			</transition>
+			<transition>
+				<source ref="id43"/>
+				<target ref="id44"/>
+					<label kind="synchronisation" >F[10]?</label>
+					<label kind="assignment" >setInstructions(10)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> RENDER </name>
+			<declaration></declaration>
+			id45
+			<location id="id45">
+				<name>id45</name>
+			</location>
+			
+			
+			<location id="id46">
+				<name>id46</name>
+			</location>
+			
+			
+			
+			
+			<location id="id47">
+				<name>id47</name>
+			</location>
+			<init ref="id46"/>
+				
+			
+			<transition>
+				<source ref="id45"/>
+				<target ref="id46"/>
+					<label kind="synchronisation" >F[17]!</label>
+			</transition>
+			<transition>
+				<source ref="id45"/>
+				<target ref="id46"/>
+					<label kind="synchronisation" >F[18]!</label>
+			</transition>
+			<transition>
+				<source ref="id47"/>
+				<target ref="id45"/>
+					<label kind="synchronisation" >completed[11]?</label>
+			</transition>
+			<transition>
+				<source ref="id47"/>
+				<target ref="id47"/>
+					<label kind="synchronisation" >manager[11]!</label>
+			</transition>
+			<transition>
+				<source ref="id46"/>
+				<target ref="id47"/>
+					<label kind="synchronisation" >F[11]?</label>
+					<label kind="assignment" >setInstructions(11)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> UPLOAD </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id48">
+				<name>id48</name>
+			</location>
+			
+			<location id="id49">
+				<name>id49</name>
+			</location>
+			<init ref="id48"/>
+				
+			
+			<transition>
+				<source ref="id49"/>
+				<target ref="id48"/>
+					<label kind="synchronisation" >completed[12]?</label>
+			</transition>
+			<transition>
+				<source ref="id49"/>
+				<target ref="id49"/>
+					<label kind="synchronisation" >manager[12]!</label>
+			</transition>
+			<transition>
+				<source ref="id48"/>
+				<target ref="id49"/>
+					<label kind="synchronisation" >F[12]?</label>
+					<label kind="assignment" >setInstructions(12)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> PROCESS </name>
+			<declaration></declaration>
+			true
+			
+			
+			<location id="id50">
+				<name>id50</name>
+			</location>
+			
+			<location id="id51">
+				<name>id51</name>
+			</location>
+			<init ref="id50"/>
+				
+			
+			<transition>
+				<source ref="id51"/>
+				<target ref="id50"/>
+					<label kind="synchronisation" >completed[13]?</label>
+			</transition>
+			<transition>
+				<source ref="id51"/>
+				<target ref="id51"/>
+					<label kind="synchronisation" >manager[13]!</label>
+			</transition>
+			<transition>
+				<source ref="id50"/>
+				<target ref="id51"/>
+					<label kind="synchronisation" >F[13]?</label>
+					<label kind="assignment" >setInstructions(13)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> UPI </name>
+			<declaration></declaration>
+			id52
+			<location id="id52">
+				<name>id52</name>
+			</location>
+			
+			
+			<location id="id53">
+				<name>id53</name>
+			</location>
+			
+			
+			
+			
+			<location id="id54">
+				<name>id54</name>
+			</location>
+			<init ref="id53"/>
+				
+			
+			<transition>
+				<source ref="id52"/>
+				<target ref="id53"/>
+					<label kind="synchronisation" >F[15]!</label>
+			</transition>
+			<transition>
+				<source ref="id52"/>
+				<target ref="id53"/>
+					<label kind="synchronisation" >F[16]!</label>
+			</transition>
+			<transition>
+				<source ref="id54"/>
+				<target ref="id52"/>
+					<label kind="synchronisation" >completed[14]?</label>
+			</transition>
+			<transition>
+				<source ref="id54"/>
+				<target ref="id54"/>
+					<label kind="synchronisation" >manager[14]!</label>
+			</transition>
+			<transition>
+				<source ref="id53"/>
+				<target ref="id54"/>
+					<label kind="synchronisation" >F[14]?</label>
+					<label kind="assignment" >setInstructions(14)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> UPIL </name>
+			<declaration></declaration>
+			id55
+			<location id="id55">
+				<name>id55</name>
+			</location>
+			
+			
+			<location id="id56">
+				<name>id56</name>
+			</location>
+			
+			
+			
+			<location id="id57">
+				<name>id57</name>
+			</location>
+			<location id="id58">
+				<name>id58</name>
+			</location>
+			<location id="id59">
+				<name>id59</name>
+			</location>
+			
+			
+			
+			
+			
+			<location id="id60">
+				<name>id60</name>
+			</location>
+			<init ref="id56"/>
+				
+			
+			<transition>
+				<source ref="id57"/>
+				<target ref="id56"/>
+					<label kind="synchronisation" >F[12]!</label>
+			</transition>
+			<transition>
+				<source ref="id58"/>
+				<target ref="id57"/>
+					<label kind="synchronisation" >completed[15]?</label>
+			</transition>
+			<transition>
+				<source ref="id58"/>
+				<target ref="id58"/>
+					<label kind="synchronisation" >manager[15]!</label>
+			</transition>
+			<transition>
+				<source ref="id59"/>
+				<target ref="id58"/>
+					<label kind="synchronisation" >F[15]?</label>
+					<label kind="assignment" >setInstructions(15)</label>
+			</transition>
+			<transition>
+				<source ref="id55"/>
+				<target ref="id59"/>
+					<label kind="synchronisation" >F[13]!</label>
+			</transition>
+			<transition>
+				<source ref="id60"/>
+				<target ref="id55"/>
+					<label kind="synchronisation" >completed[15]?</label>
+			</transition>
+			<transition>
+				<source ref="id60"/>
+				<target ref="id60"/>
+					<label kind="synchronisation" >manager[15]!</label>
+			</transition>
+			<transition>
+				<source ref="id56"/>
+				<target ref="id60"/>
+					<label kind="synchronisation" >F[15]?</label>
+					<label kind="assignment" >setInstructions(15)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> UPIS </name>
+			<declaration></declaration>
+			id61
+			<location id="id61">
+				<name>id61</name>
+			</location>
+			
+			
+			<location id="id62">
+				<name>id62</name>
+			</location>
+			
+			
+			
+			<location id="id63">
+				<name>id63</name>
+			</location>
+			<location id="id64">
+				<name>id64</name>
+			</location>
+			<location id="id65">
+				<name>id65</name>
+			</location>
+			
+			
+			
+			
+			
+			<location id="id66">
+				<name>id66</name>
+			</location>
+			<init ref="id62"/>
+				
+			
+			<transition>
+				<source ref="id63"/>
+				<target ref="id62"/>
+					<label kind="synchronisation" >F[13]!</label>
+			</transition>
+			<transition>
+				<source ref="id64"/>
+				<target ref="id63"/>
+					<label kind="synchronisation" >completed[16]?</label>
+			</transition>
+			<transition>
+				<source ref="id64"/>
+				<target ref="id64"/>
+					<label kind="synchronisation" >manager[16]!</label>
+			</transition>
+			<transition>
+				<source ref="id65"/>
+				<target ref="id64"/>
+					<label kind="synchronisation" >F[16]?</label>
+					<label kind="assignment" >setInstructions(16)</label>
+			</transition>
+			<transition>
+				<source ref="id61"/>
+				<target ref="id65"/>
+					<label kind="synchronisation" >F[12]!</label>
+			</transition>
+			<transition>
+				<source ref="id66"/>
+				<target ref="id61"/>
+					<label kind="synchronisation" >completed[16]?</label>
+			</transition>
+			<transition>
+				<source ref="id66"/>
+				<target ref="id66"/>
+					<label kind="synchronisation" >manager[16]!</label>
+			</transition>
+			<transition>
+				<source ref="id62"/>
+				<target ref="id66"/>
+					<label kind="synchronisation" >F[16]?</label>
+					<label kind="assignment" >setInstructions(16)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> RENL </name>
+			<declaration></declaration>
+			id67
+			<location id="id67">
+				<name>id67</name>
+			</location>
+			
+			
+			<location id="id68">
+				<name>id68</name>
+			</location>
+			
+			
+			
+			<location id="id69">
+				<name>id69</name>
+			</location>
+			<location id="id70">
+				<name>id70</name>
+			</location>
+			<location id="id71">
+				<name>id71</name>
+			</location>
+			
+			
+			
+			
+			
+			<location id="id72">
+				<name>id72</name>
+			</location>
+			<init ref="id68"/>
+				
+			
+			<transition>
+				<source ref="id69"/>
+				<target ref="id68"/>
+					<label kind="synchronisation" >F[13]!</label>
+			</transition>
+			<transition>
+				<source ref="id70"/>
+				<target ref="id69"/>
+					<label kind="synchronisation" >completed[17]?</label>
+			</transition>
+			<transition>
+				<source ref="id70"/>
+				<target ref="id70"/>
+					<label kind="synchronisation" >manager[17]!</label>
+			</transition>
+			<transition>
+				<source ref="id71"/>
+				<target ref="id70"/>
+					<label kind="synchronisation" >F[17]?</label>
+					<label kind="assignment" >setInstructions(17)</label>
+			</transition>
+			<transition>
+				<source ref="id67"/>
+				<target ref="id71"/>
+					<label kind="synchronisation" >F[11]!</label>
+			</transition>
+			<transition>
+				<source ref="id72"/>
+				<target ref="id67"/>
+					<label kind="synchronisation" >completed[17]?</label>
+			</transition>
+			<transition>
+				<source ref="id72"/>
+				<target ref="id72"/>
+					<label kind="synchronisation" >manager[17]!</label>
+			</transition>
+			<transition>
+				<source ref="id68"/>
+				<target ref="id72"/>
+					<label kind="synchronisation" >F[17]?</label>
+					<label kind="assignment" >setInstructions(17)</label>
+			</transition>
+			</template>
+			
+			<template>
+			<name x="5" y="5"> RENS </name>
+			<declaration></declaration>
+			id73
+			<location id="id73">
+				<name>id73</name>
+			</location>
+			
+			
+			<location id="id74">
+				<name>id74</name>
+			</location>
+			
+			
+			
+			<location id="id75">
+				<name>id75</name>
+			</location>
+			<location id="id76">
+				<name>id76</name>
+			</location>
+			<location id="id77">
+				<name>id77</name>
+			</location>
+			
+			
+			
+			
+			
+			<location id="id78">
+				<name>id78</name>
+			</location>
+			<init ref="id74"/>
+				
+			
+			<transition>
+				<source ref="id75"/>
+				<target ref="id74"/>
+					<label kind="synchronisation" >F[11]!</label>
+			</transition>
+			<transition>
+				<source ref="id76"/>
+				<target ref="id75"/>
+					<label kind="synchronisation" >completed[18]?</label>
+			</transition>
+			<transition>
+				<source ref="id76"/>
+				<target ref="id76"/>
+					<label kind="synchronisation" >manager[18]!</label>
+			</transition>
+			<transition>
+				<source ref="id77"/>
+				<target ref="id76"/>
+					<label kind="synchronisation" >F[18]?</label>
+					<label kind="assignment" >setInstructions(18)</label>
+			</transition>
+			<transition>
+				<source ref="id73"/>
+				<target ref="id77"/>
+					<label kind="synchronisation" >F[13]!</label>
+			</transition>
+			<transition>
+				<source ref="id78"/>
+				<target ref="id73"/>
+					<label kind="synchronisation" >completed[18]?</label>
+			</transition>
+			<transition>
+				<source ref="id78"/>
+				<target ref="id78"/>
+					<label kind="synchronisation" >manager[18]!</label>
+			</transition>
+			<transition>
+				<source ref="id74"/>
+				<target ref="id78"/>
+					<label kind="synchronisation" >F[18]?</label>
+					<label kind="assignment" >setInstructions(18)</label>
+			</transition>
+			</template>
+			
+		
+			
+								<template>
+										<name>Manager</name>
+										<declaration>int x;
+										/*
+										0=null
+										1=loadL
+										2=loadR
+										3=offload
+										4=migrate
+										5=back
+										6=restore
+										7=disposeL
+										8=disposeR
+										*/
+								void localRemoteSync(int i){
+								if(IsLocal==true){
+								clockTime=(Info[i].megaByte)/network;
+								if(battery&gt;(clockTime/10)){
+								battery-=(clockTime/10);
+								}else{
+								battery=0;
+								}
+								
+								}
+								}
+								
+								void remoteLocalSync(int i){
+								if(IsLocal==false){
+								clockTime=(Info[i].megaByte)/network;
+								if(battery&gt;(clockTime/10)){
+								battery-=(clockTime/10);
+								}else{
+								battery=0;
+								}
+								}
+								}</declaration>
+										<location id="id41" x="896" y="-448">
+										</location>
+										<location id="id42" x="608" y="-440">
+										</location>
+										<location id="id43" x="-400" y="-440">
+										</location>
+										<location id="id44" x="-56" y="-448">
+										</location>
+										<location id="id45" x="864" y="64">
+										</location>
+										<location id="id46" x="864" y="8">
+										</location>
+										<location id="id47" x="152" y="64">
+										</location>
+										<location id="id48" x="144" y="0">
+										</location>
+										<location id="id49" x="648" y="59">
+										</location>
+										<location id="id50" x="648" y="11">
+										</location>
+										<location id="id51" x="240" y="64">
+										</location>
+										<location id="id52" x="232" y="16">
+										</location>
+										<location id="id53" x="432" y="-320">
+										</location>
+										<location id="id54" x="80" y="0">
+										</location>
+										<location id="id55" x="928" y="64">
+										</location>
+										<location id="id56" x="928" y="8">
+										</location>
+										<location id="id57" x="72" y="64">
+										</location>
+										<location id="id58" x="432" y="40">
+											<committed/>
+										</location>
+										<init ref="id53"/>
+										<transition>
+											<source ref="id41"/>
+											<target ref="id42"/>
+											<label kind="synchronisation" x="692" y="-459">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id42"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="460" y="-395">startL[x]!</label>
+											<label kind="assignment" x="460" y="-380">IsLocal=true</label>
+										</transition>
+										<transition>
+											<source ref="id43"/>
+											<target ref="id44"/>
+											<label kind="synchronisation" x="-248" y="-472">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id43"/>
+											<label kind="guard" x="-840" y="-328">fragmentStateLocal[x]!=2 and fragmentStateRemote[x]!=2 and Info[x].isOffloadable==true</label>
+											<label kind="synchronisation" x="-432" y="-375">time!</label>
+											<label kind="assignment" x="-432" y="-360">localRemoteSync(x)</label>
+										</transition>
+										<transition>
+											<source ref="id45"/>
+											<target ref="id55"/>
+											<label kind="synchronisation" x="872" y="40">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id46"/>
+											<target ref="id56"/>
+											<label kind="synchronisation" x="872" y="-16">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id47"/>
+											<target ref="id57"/>
+											<label kind="synchronisation" x="88" y="40">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id48"/>
+											<target ref="id54"/>
+											<label kind="synchronisation" x="96" y="-24">timeR?</label>
+										</transition>
+										<transition>
+											<source ref="id52"/>
+											<target ref="id48"/>
+											<label kind="synchronisation" x="168" y="-8">time!</label>
+											<label kind="assignment" x="128" y="8">localRemoteSync(x)</label>
+										</transition>
+										<transition>
+											<source ref="id49"/>
+											<target ref="id45"/>
+											<label kind="synchronisation" x="688" y="32">time!</label>
+											<label kind="assignment" x="672" y="64">remoteLocalSync(x)</label>
+										</transition>
+										<transition>
+											<source ref="id50"/>
+											<target ref="id46"/>
+											<label kind="synchronisation" x="680" y="-8">time!</label>
+											<label kind="assignment" x="656" y="16">remoteLocalSync(x)</label>
+										</transition>
+										<transition>
+											<source ref="id51"/>
+											<target ref="id47"/>
+											<label kind="synchronisation" x="184" y="48">time!</label>
+											<label kind="assignment" x="136" y="64">localRemoteSync(x)</label>
+										</transition>
+										<transition>
+											<source ref="id53"/>
+											<target ref="id58"/>
+											<label kind="select" x="388" y="-177">e:id_t</label>
+											<label kind="guard" x="16" y="-88">battery&gt;0 and !(instructionsNumber[e]&lt;=0 or managerEnabled==false or (Info[x].isOffloadable==false and fragmentStateLocal[x]==2))</label>
+											<label kind="synchronisation" x="388" y="-147">manager[e]?</label>
+											<label kind="assignment" x="388" y="-132">x=e</label>
+										</transition>
+										<transition>
+											<source ref="id44"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="152" y="-488">startR[x]!</label>
+											<label kind="assignment" x="128" y="-512">IsLocal=false</label>
+											<nail x="344" y="-472"/>
+										</transition>
+										<transition>
+											<source ref="id55"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="1016" y="48">startL[x]!</label>
+											<label kind="assignment" x="1016" y="32">IsLocal=true</label>
+											<nail x="1112" y="64"/>
+											<nail x="960" y="-304"/>
+										</transition>
+										<transition>
+											<source ref="id56"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="1040" y="-8">startL[x]!</label>
+											<label kind="assignment" x="984" y="-24">IsLocal=true</label>
+											<nail x="1112" y="8"/>
+											<nail x="960" y="-304"/>
+										</transition>
+										<transition>
+											<source ref="id57"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="0" y="48">startR[x]!</label>
+											<label kind="assignment" x="-24" y="32">IsLocal=false</label>
+											<nail x="-48" y="64"/>
+											<nail x="-48" y="-296"/>
+										</transition>
+										<transition>
+											<source ref="id54"/>
+											<target ref="id53"/>
+											<label kind="synchronisation" x="4" y="-16">startR[x]!</label>
+											<label kind="assignment" x="-24" y="-32">IsLocal=false</label>
+											<nail x="20" y="0"/>
+											<nail x="-44" y="0"/>
+											<nail x="-44" y="-296"/>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id52"/>
+											<label kind="guard" x="-720" y="-16">fragmentStateLocal[x]==2 and fragmentStateRemote[x]!=2 and Info[x].isOffloadable==true</label>
+											<label kind="synchronisation" x="288" y="8">stopL[x]!</label>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id50"/>
+											<label kind="guard" x="1144" y="-8">fragmentStateLocal[x]!=2 and fragmentStateRemote[x]==2</label>
+											<label kind="synchronisation" x="512" y="0">stopR[x]!</label>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id49"/>
+											<label kind="guard" x="1136" y="40">fragmentStateLocal[x]!=2 and fragmentStateRemote[x]==2</label>
+											<label kind="synchronisation" x="504" y="56">disposeR[x]!</label>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id41"/>
+											<label kind="guard" x="1024" y="-472">fragmentStateLocal[x]!=2 and fragmentStateRemote[x]!=2</label>
+											<label kind="synchronisation" x="1224" y="-400">time!</label>
+											<label kind="assignment" x="1208" y="-384">remoteLocalSync(x)</label>
+											<nail x="1248" y="-360"/>
+										</transition>
+										<transition>
+											<source ref="id58"/>
+											<target ref="id51"/>
+											<label kind="guard" x="-720" y="56">fragmentStateLocal[x]==2 and fragmentStateRemote[x]!=2 and Info[x].isOffloadable==true</label>
+											<label kind="synchronisation" x="280" y="56">disposeL[x]!</label>
+										</transition>
+									</template>
+									<template>
+										<name>Local</name>
+										<parameter>const id_t i</parameter>
+										<location id="id59" x="168" y="328">
+										</location>
+										<location id="id60" x="168" y="144">
+										</location>
+										<location id="id61" x="168" y="-72">
+										</location>
+										<init ref="id61"/>
+										<transition>
+											<source ref="id60"/>
+											<target ref="id59"/>
+											<label kind="guard" x="104" y="192">instructionsNumber[i]==0</label>
+											<label kind="synchronisation" x="112" y="216">completed[i]!</label>
+											<label kind="assignment" x="108" y="236">fragmentStateLocal[i]=1</label>
+										</transition>
+										<transition>
+											<source ref="id60"/>
+											<target ref="id60"/>
+											<label kind="guard" x="80" y="56">instructionsNumber[i]!=0</label>
+											<label kind="synchronisation" x="104" y="48">executeL!</label>
+											<label kind="assignment" x="80" y="32">fragmentToCompute=i</label>
+											<nail x="104" y="72"/>
+											<nail x="192" y="72"/>
+										</transition>
+										<transition>
+											<source ref="id59"/>
+											<target ref="id61"/>
+											<label kind="synchronisation" x="-136" y="80">disposeL[i]?</label>
+											<label kind="assignment" x="-304" y="104">fragmentStateLocal[i]=0, memoryDown(i)</label>
+											<nail x="-128" y="320"/>
+											<nail x="-128" y="-88"/>
+										</transition>
+										<transition>
+											<source ref="id60"/>
+											<target ref="id61"/>
+											<label kind="synchronisation" x="208" y="-16">disposeL[i]?</label>
+											<label kind="assignment" x="272" y="32">fragmentStateLocal[i]=0, memoryDown(i)</label>
+											<nail x="384" y="152"/>
+											<nail x="368" y="-64"/>
+										</transition>
+										<transition>
+											<source ref="id60"/>
+											<target ref="id59"/>
+											<label kind="synchronisation" x="360" y="232">stopL[i]?</label>
+											<label kind="assignment" x="328" y="256">fragmentStateLocal[i]=1</label>
+											<nail x="376" y="152"/>
+											<nail x="384" y="328"/>
+										</transition>
+										<transition>
+											<source ref="id59"/>
+											<target ref="id60"/>
+											<label kind="synchronisation" x="-8" y="208">startL[i]?</label>
+											<label kind="assignment" x="-56" y="248">fragmentStateLocal[i]=2</label>
+											<nail x="8" y="328"/>
+											<nail x="8" y="144"/>
+										</transition>
+										<transition>
+											<source ref="id61"/>
+											<target ref="id60"/>
+											<label kind="synchronisation" x="-24" y="-24">startL[i]?</label>
+											<label kind="assignment" x="-112" y="-16">fragmentStateLocal[i]=2, memoryUp(i)</label>
+											<nail x="0" y="-80"/>
+											<nail x="8" y="144"/>
+										</transition>
+									</template>
+									<template>
+										<name>Remote</name>
+										<parameter>const id_t i</parameter>
+										<location id="id62" x="208" y="512">
+										</location>
+										<location id="id63" x="208" y="144">
+										</location>
+										<location id="id64" x="208" y="-200">
+										</location>
+										<init ref="id64"/>
+										<transition>
+											<source ref="id63"/>
+											<target ref="id63"/>
+											<label kind="guard" x="138" y="58">instructionsNumber[i]!=0</label>
+											<label kind="synchronisation" x="176" y="24">executeR!</label>
+											<label kind="assignment" x="144" y="40">fragmentToCompute=i</label>
+											<nail x="120" y="40"/>
+											<nail x="304" y="40"/>
+										</transition>
+										<transition>
+											<source ref="id63"/>
+											<target ref="id62"/>
+											<label kind="guard" x="148" y="298">instructionsNumber[i]==0</label>
+											<label kind="synchronisation" x="148" y="313">completed[i]!</label>
+											<label kind="assignment" x="120" y="336">fragmentStateRemote[i]=1</label>
+										</transition>
+										<transition>
+											<source ref="id62"/>
+											<target ref="id64"/>
+											<label kind="synchronisation" x="-168" y="128">disposeR[i]?</label>
+											<label kind="assignment" x="-224" y="152">fragmentStateRemote[i]=0</label>
+											<nail x="-112" y="520"/>
+											<nail x="-112" y="-200"/>
+										</transition>
+										<transition>
+											<source ref="id63"/>
+											<target ref="id62"/>
+											<label kind="synchronisation" x="368" y="304">stopR[i]?</label>
+											<label kind="assignment" x="336" y="328">fragmentStateRemote[i]=1</label>
+											<nail x="392" y="152"/>
+											<nail x="384" y="512"/>
+										</transition>
+										<transition>
+											<source ref="id63"/>
+											<target ref="id64"/>
+											<label kind="synchronisation" x="336" y="-40">disposeR[i]?</label>
+											<label kind="assignment" x="312" y="-24">fragmentStateRemote[i]=0</label>
+											<nail x="392" y="152"/>
+											<nail x="376" y="-208"/>
+										</transition>
+										<transition>
+											<source ref="id62"/>
+											<target ref="id63"/>
+											<label kind="synchronisation" x="-16" y="328">startR[i]?</label>
+											<label kind="assignment" x="-88" y="360">fragmentStateRemote[i]=2</label>
+											<nail x="-8" y="520"/>
+											<nail x="16" y="144"/>
+										</transition>
+										<transition>
+											<source ref="id64"/>
+											<target ref="id63"/>
+											<label kind="synchronisation" x="-32" y="-64">startR[i]?</label>
+											<label kind="assignment" x="-72" y="-32">fragmentStateRemote[i]=2</label>
+											<nail x="16" y="-200"/>
+											<nail x="16" y="152"/>
+										</transition>
+									</template>
+									<template>
+										<name>LocalCPU</name>
+										<declaration>clock x;
+								void compute(){
+								if(instructionsNumber[fragmentToCompute]&gt;=mobileInstructions){
+								if(battery&gt;=10){
+								battery-=10;
+								}else{
+								battery=0;
+								}	
+								instructionsNumber[fragmentToCompute]-=mobileInstructions;
+								}else{
+								int instr=((instructionsNumber[fragmentToCompute]*10)/mobileInstructions);	
+								if(battery&gt;=instr){
+								battery-=instr;
+								}else{
+								battery=0;
+								}	
+								instructionsNumber[fragmentToCompute]=0;}
+								}</declaration>
+										<location id="id65" x="40" y="80">
+											<name x="30" y="50">id50</name>
+											<label kind="invariant" x="-76" y="68">x&lt;=10</label>
+										</location>
+										<location id="id66" x="190" y="80">
+											<name x="180" y="50">id51</name>
+										</location>
+										<init ref="id66"/>
+										<transition>
+											<source ref="id65"/>
+											<target ref="id66"/>
+											<label kind="guard" x="98" y="-30">x==10 and battery&gt;0</label>
+											<label kind="assignment" x="98" y="4">compute(), managerEnabled=true</label>
+											<nail x="80" y="-72"/>
+										</transition>
+										<transition>
+											<source ref="id66"/>
+											<target ref="id65"/>
+											<label kind="synchronisation" x="120" y="384">executeL?</label>
+											<label kind="assignment" x="120" y="408">x=0, managerEnabled=false</label>
+											<nail x="136" y="384"/>
+										</transition>
+									</template>
+									<template>
+										<name>RemoteCPU</name>
+										<declaration>clock x;
+								void computeR(){if(instructionsNumber[fragmentToCompute]&gt;=cloudInstructions){
+									instructionsNumber[fragmentToCompute]-=cloudInstructions;
+								}else{
+									instructionsNumber[fragmentToCompute]=0;
+								}
+								}</declaration>
+										<location id="id67" x="40" y="80">
+											<name x="30" y="50">id52</name>
+											<label kind="invariant" x="-24" y="80">x&lt;=10</label>
+										</location>
+										<location id="id68" x="190" y="80">
+											<name x="180" y="50">id53</name>
+										</location>
+										<init ref="id68"/>
+										<transition>
+											<source ref="id67"/>
+											<target ref="id68"/>
+											<label kind="guard" x="120" y="-96">x==10</label>
+											<label kind="assignment" x="96" y="-120">computeR(),  managerEnabled=true</label>
+											<nail x="88" y="-104"/>
+										</transition>
+										<transition>
+											<source ref="id68"/>
+											<target ref="id67"/>
+											<label kind="synchronisation" x="80" y="424">executeR?</label>
+											<label kind="assignment" x="72" y="392">x=0, managerEnabled=false</label>
+											<nail x="120" y="416"/>
+										</transition>
+									</template>
+									<template>
+										<name>CLOCK</name>
+										<declaration>clock y;</declaration>
+										<location id="id69" x="-40" y="-112">
+											<label kind="invariant" x="-51" y="-144">y&lt;=clockTime</label>
+										</location>
+										<location id="id70" x="0" y="0">
+										</location>
+										<init ref="id70"/>
+										<transition>
+											<source ref="id69"/>
+											<target ref="id70"/>
+											<label kind="guard" x="-17" y="-76">y==clockTime</label>
+											<label kind="synchronisation" x="-17" y="-93">timeR!</label>
+											<label kind="assignment" x="-17" y="-59">clockTime=0</label>
+										</transition>
+										<transition>
+											<source ref="id70"/>
+											<target ref="id69"/>
+											<label kind="synchronisation" x="-120" y="-8">time?</label>
+											<label kind="assignment" x="-136" y="-48">y=0</label>
+											<nail x="-160" y="16"/>
+											<nail x="-96" y="-56"/>
+										</transition>
+									</template>
+			
+			
+			<system>system USER_INTERFACE,CONTROL,PRODUCT_CATALOG,CATALOG_DATABASE,SIGN_ON,USER_DATABASE,CUSTOMER,ACCOUNT_DATABASE,ORDER_MESSAGE,QUEUE,SHOPPING_CART,RENDER,UPLOAD,PROCESS,UPI,UPIL,UPIS,RENL,RENS,Manager, Local, Remote, LocalCPU, RemoteCPU, CLOCK;</system>
+			</nta>

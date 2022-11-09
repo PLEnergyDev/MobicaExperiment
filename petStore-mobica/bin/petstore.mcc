@@ -1,0 +1,44 @@
+Application Petstore {
+	
+	Fragment USER_INTERFACE[11, 1, 0, false] init;
+	Fragment CONTROL[110, 20, 10, false];
+	Fragment PRODUCT_CATALOG[15, 5, 5, false];
+	Fragment CATALOG_DATABASE[30, 10, 5, true]; 
+	Fragment SIGN_ON[5, 1, 1, false];
+	Fragment USER_DATABASE[10, 5, 2, true];
+	Fragment CUSTOMER[11, 1, 5, false];
+	Fragment ACCOUNT_DATABASE[30, 10, 5, true]; 
+	Fragment ORDER_MESSAGE[11, 2, 1, false];
+	Fragment QUEUE[20, 10, 2, true];
+	Fragment SHOPPING_CART[25, 2, 5, false];
+	Fragment RENDER[20, 5, 0, true];
+	Fragment UPLOAD[10,5,0,false];
+	Fragment PROCESS[30,5,0,true];
+	Fragment UPI[10,1,0,false];
+	Fragment UPIL[5,2,0,false];
+	Fragment UPIS[5,2,0,true];
+	
+	Fragment RENL[5,2,0,false];
+	Fragment RENS[5,2,0,true];
+	Structure Connectins [
+		USER_INTERFACE --:: CONTROL, RENDER;
+		PRODUCT_CATALOG --:: CATALOG_DATABASE;
+		UPI --> UPIL, UPIS;
+		UPIS --:: UPLOAD, PROCESS;
+		UPIL --:: PROCESS, UPLOAD;
+		
+		RENDER --> RENL, RENS;
+		RENS --::  PROCESS, RENDER;
+		RENL --::  RENDER, PROCESS;
+		
+		CONTROL --> SIGN_ON, PRODUCT_CATALOG, SHOPPING_CART, ORDER_MESSAGE, UPI;
+		ORDER_MESSAGE --:: QUEUE;
+		SIGN_ON --:: USER_DATABASE;
+		CUSTOMER --:: ACCOUNT_DATABASE;		
+	];
+};
+
+Cloud Application_server [32, Petstore];
+Cloud Database_server [32, Petstore];
+Mobile  Client_device[16 , Petstore, 100, 2, 0];
+System Network := Application_server | Database_server;
