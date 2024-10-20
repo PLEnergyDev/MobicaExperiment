@@ -270,7 +270,7 @@ battery-=(clockTime/10);
 }else{
 battery=0;
 }
-
+energy +=  clockTime/10;
 }
 }
 
@@ -282,6 +282,7 @@ battery-=(clockTime/10);
 }else{
 battery=0;
 }
+energy +=  clockTime/10;
 }
 }
 </declaration>
@@ -384,7 +385,7 @@ def LocalCpu(){
 	'''
 	<template>
 	<name>LocalCPU</name>
-	<declaration>void compute(){if(instructionsNumber[fragmentToCompute]>=mobileInstructions){	battery-=10;	instructionsNumber[fragmentToCompute]-=mobileInstructions;}else{battery-=((instructionsNumber[fragmentToCompute]*10)/mobileInstructions);	instructionsNumber[fragmentToCompute]=0;}globalTime+=10;}</declaration>
+	<declaration>void compute(){if(instructionsNumber[fragmentToCompute]>=mobileInstructions){	battery-=10;	energy +=  10; instructionsNumber[fragmentToCompute]-=mobileInstructions;}else{battery-=((instructionsNumber[fragmentToCompute]*10)/mobileInstructions);	instructionsNumber[fragmentToCompute]=0; energy +=instr;}globalTime+=10;}</declaration>
 	«val init="id"+ID»
 	«val second="id"+ID»
 	«createLocation(init, "committed")»
@@ -401,7 +402,7 @@ def LocalCpu(){
 	'''
 	<template>
 	<name>RemoteCPU</name>
-	<declaration>void computeR(){if(instructionsNumber[fragmentToCompute]>=cloudInstructions){	instructionsNumber[fragmentToCompute]-=cloudInstructions;}else{	instructionsNumber[fragmentToCompute]=0;}globalTime+=10;}</declaration>
+	<declaration>void computeR(){if(instructionsNumber[fragmentToCompute]>=cloudInstructions){	instructionsNumber[fragmentToCompute]-=cloudInstructions; energy +=  10;}else{	int instr=((instructionsNumber[fragmentToCompute]*10)/cloudInstructions); instructionsNumber[fragmentToCompute]=0; energy +=  instr;}globalTime+=10;}</declaration>
 	«val init="id"+ID»
 	«val second="id"+ID»
 	«createLocation(init, "committed")»
@@ -437,7 +438,7 @@ clock globalTime;
 int clockTime;
 int memory ;
 
-int energy ;
+int32_t energy ;
 
 
 chan F[N], startL[N], startR[N], stopL[N], stopR[N], disposeL[N], disposeR[N], completed[N], manager[N], time, timeR;

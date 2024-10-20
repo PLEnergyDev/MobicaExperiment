@@ -20,7 +20,7 @@ battery-=(clockTime/10);
 }else{
 battery=0;
 }
-
+energy +=  clockTime/10;
 }
 }
 
@@ -32,6 +32,7 @@ battery-=(clockTime/10);
 }else{
 battery=0;
 }
+energy +=  clockTime/10;
 }
 }</declaration>
 		<location id="id41" x="896" y="-448">
@@ -363,7 +364,8 @@ if(battery&gt;=10){
 battery-=10;
 }else{
 battery=0;
-}	
+}
+energy += 10;	
 instructionsNumber[fragmentToCompute]-=mobileInstructions;
 }else{
 int instr=((instructionsNumber[fragmentToCompute]*10)/mobileInstructions);	
@@ -372,7 +374,9 @@ battery-=instr;
 }else{
 battery=0;
 }	
-instructionsNumber[fragmentToCompute]=0;}
+instructionsNumber[fragmentToCompute]=0;
+energy +=instr;
+}
 }</declaration>
 		<location id="id65" x="40" y="80">
 			<name x="30" y="50">id50</name>
@@ -402,8 +406,11 @@ instructionsNumber[fragmentToCompute]=0;}
 		<declaration>clock x;
 void computeR(){if(instructionsNumber[fragmentToCompute]&gt;=cloudInstructions){
 	instructionsNumber[fragmentToCompute]-=cloudInstructions;
+	energy +=  10;
 }else{
+	int instr=((instructionsNumber[fragmentToCompute]*10)/cloudInstructions);
 	instructionsNumber[fragmentToCompute]=0;
+	energy +=  instr;
 }
 }</declaration>
 		<location id="id67" x="40" y="80">
